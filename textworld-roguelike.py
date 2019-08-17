@@ -7,7 +7,7 @@ def fightSystem(Uhr,Uhp,Uat,Uag,Mname,Mhp,Mat,Mag):
     Mhr = Mhp
     #main loop
     while (Uhr > 0) and (Mhr > 0):
-        print("YOU | Health: {0}/{1} | Attack: {2} | Agility: {3}".format(Uhr,Uhp,Uat,Uag))
+        print("You | Health: {0}/{1} | Attack: {2} | Agility: {3}".format(Uhr,Uhp,Uat,Uag))
         print("{0} | Health: {1}/{2} | Attack: {3} | Agility: {4}".format(Mname,Mhr,Mhp,Mat,Mag))
 	#player's turn
         print("You attack {0}.".format(Mname))
@@ -75,35 +75,71 @@ while rollChar == False:
     choice = input("Accept these stats? y/ n: ")
     if choice == "y":
         rollChar = True
-
-####################
-#main game loop
+        
 game = True
 stage = "Plains"
 Uhr = Uhp
 keys = 0
 undeadLast = False
+title = False
 
+####################
+#main game loop
 while game == True:
-    print()
-    print("Current stage: {0}\n{1}/{2}hp | {3} gold | {4} key(s)".format(stage,Uhr,Uhp,gp,keys))
+    
+    #achievements
+    if title == False:
+        if gp > 999:
+            name += " the Gold"
+            print("\nCongratulations, your wealth has earned you the title of {0}!".format(name))
+            title = True
+        if Uat > 9:
+            name += " the Mighty"
+            print("\nCongratulations, your strength has earned you the title of {0}!".format(name))
+            title = True            
+        if Uag > 6:
+            name += " the Swift"
+            print("\nCongratulations, your agility has earned you the title of {0}!".format(name))
+            title = True
+        if keys > 5:
+            name += " the Keymaster"
+            print("\nCongratulations, your strange obsession with key collecting has earned you the title of {0}!".format(name))
+            title = True           
+
+    #basic
+    print("\nCurrent stage: {0}\n{1}/{2}hp | {3} gold | {4} key(s)".format(stage,Uhr,Uhp,gp,keys))
     input("Press enter to pick a card.")
     print("Picking a card...")
     print()
-    event = random.randrange(0,20)
+    event = random.randrange(0,22)        
+    
     #single frequency events
     if event == 0:
         stage = "Plains"
         print("You enter the {0}.".format(stage))
+        if race == "Beastman":
+            print("This land makes you proud to be a Beastman.\nYou restore 5hp.")
+            Uhr += 5
     if event == 1:
         stage = "Desert"
         print("You enter the {0}.".format(stage))
+        print("It feels like you are burning.\nYou lose 5hp.")
+        Uhr -= 5
     if event == 2:
         stage = "Swamp"
         print("You enter the {0}.".format(stage))
+        if race == "Undead":
+            print("It reeks of death, but this is perfect for an undead.\nYou restore 10hp.")
+            Uhr += 10
+        else:
+            print("It swamp reeks of death.\nYou lose 5hp.")
+            Uhr -= 5
     if event == 3:
         stage = "Forest"
         print("You enter the {0}.".format(stage))
+        if race != "Undead":
+            print("You forage for a while and find some things to eat.\nYou restore 10hp.")
+            Uhr += 10
     if event == 4:
         print("You encounter a Slime Monster!\n")
         result = fightSystem(Uhr,Uhp,Uat,Uag,"Slime Monster",30,2,2)
@@ -240,18 +276,31 @@ while game == True:
         undeadLast = False
     if event == 19:
         print("You encounter a Unicorn!\n")
-        result = fightSystem(Uhr,Uhp,Uat,Uag,"Rogue",70,4,4)
+        result = fightSystem(Uhr,Uhp,Uat,Uag,"Unicorn",70,4,4)
         gp += result[0]
         Uhp += 5
         Uhr = Uhp
         print("Drinking unicorn blood raises your max health by 5 and restores it to full!")
         undeadLast = False
+    if event == 20:
+        print("You find a well where the water has healing properties.\nIt restores 20hp.")
+        Uhr += 20
+        if Uhr > Uhp:
+            Uhr = Uhp
+    if event == 21:
+        print("You meet a sorcerer looking for someone to test an experimental potion on.\nIt has a 50/50 chance of making you stronger or weaker.")
+        choice = input("Drink the potion? y/ n: ")
+        if choice == "y":
+            rand = random.randrange(0,2)
+            if rand == 1:
+                Uat += 1
+                print("It goes well! You gain an attack point.")
+            else:
+                Uat -= 1
+                print("It goes poorly! You lose an attack point.")
+        else:
+            print("You refuse the potion.")
 
-    if event == 99:
-        print("You meet a gambler.")
-    if event == 99:
-        print("You meet a gambler.")
-        
     #dual frequency events
     ##NONE##
 
@@ -260,3 +309,4 @@ while game == True:
         print("You have no more healthpoints left.\nYOU ARE DEAD")
         input("Press enter to finish.")
         exit()
+        
